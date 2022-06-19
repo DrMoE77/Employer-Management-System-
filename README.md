@@ -16,7 +16,7 @@
   It is a for a business owner to be able to keep track of their employees and their business. 
 
   ## Installation 
-  nmp i 
+  npm i 
 
   ## License
   [![License used: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
