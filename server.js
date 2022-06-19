@@ -9,8 +9,8 @@ import express from "express"
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: process.env.MYSQL_PASSWORD,
-  database: 'employee_mgmt_db'
+  password: "!DhZ96jmp77",
+  database: "employee_db"
 });
 
 connection.connect(err => {
@@ -118,7 +118,7 @@ function showRoles(){
 };
 
 // function for adding a department
-addDepartment = () => {
+const addDepartment = () => {
     inquirer.prompt([
         {
           type: 'input', 
@@ -148,7 +148,7 @@ addDepartment = () => {
 
 
 // function to add a role 
-addRole = () => {
+const addRole = () => {
   inquirer.prompt([
     {
       type: 'input', 
@@ -214,7 +214,7 @@ addRole = () => {
 };
 
 // function to add an employee 
-addEmployee = () => {
+const addEmployee = () => {
   inquirer.prompt([
     {
       type: 'input',
@@ -304,7 +304,7 @@ addEmployee = () => {
 };
 
 // function to updating an employee 
-updateEmployee = () => {
+const updateEmployee = () => {
   // get employees from employee table 
   const employeeSql = `SELECT * FROM employee`;
 

@@ -1,5 +1,6 @@
-CREATE DATABASE employee_managmentdb
-USE employee_managmentdb
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db
+USE employee_db
 -- Table: department
 CREATE TABLE department (
     d_id int,
