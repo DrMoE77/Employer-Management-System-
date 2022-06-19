@@ -1,9 +1,9 @@
-// importing all dependencies
-const mysql = require('mysql2')
-const inquirer = require('inquirer'); 
-const table = require('console.table'); 
-
-require('dotenv').config()
+// importing all 
+import mysql from "mysql2"
+import inquirer from "inquirer"
+import table from "console.table"
+import "dotenv/config"
+import express from "express"
 
 // connection to database
 const connection = mysql.createConnection({
