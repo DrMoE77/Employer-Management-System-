@@ -1,30 +1,30 @@
 DROP DATABASE IF EXISTS employee_db;
-CREATE DATABASE employee_db
-USE employee_db
--- Table: department
+CREATE DATABASE employee_db;
+USE employee_db; 
+
 CREATE TABLE department (
-    d_id int,
-  d_name varchar(30),
-     PRIMARY KEY  (d_id)
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL
 );
 
+CREATE TABLE role (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(30) NOT NULL, 
+    salary DECIMAL NOT NULL,
+    department_id INTEGER, 
+    INDEX dep_ind (department_id),
+    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
+);
 
--- Creating a table for Employee
 CREATE TABLE employee (
-    e_id int,
-  f_name varchar(30),
-  l_name varchar(30),
-  r_id int,
-  m_id int,
-     PRIMARY KEY  (e_id)
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INTEGER, 
+    INDEX role_ind (role_id),
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
+    manager_id INTEGER,
+    INDEX manager_ind (manager_id),
+    CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
 
-
--- Creating a table for the Role
-CREATE TABLE roles (
-    r_id int,
-    t_name varchar(30),
-    salary decimal, 
-    d_id int, 
-     PRIMARY KEY  (r_id)
-);

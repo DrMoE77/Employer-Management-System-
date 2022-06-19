@@ -1,5 +1,5 @@
 // importing all 
-import mysql from "mysql2"
+import mysql from "mysql"
 import inquirer from "inquirer"
 import table from "console.table"
 import "dotenv/config"
@@ -10,6 +10,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: "!DhZ96jmp77",
+  port: "3306",
   database: "employee_db"
 });
 
