@@ -1,165 +1,173 @@
-// importing all 
-import mysql from "mysql"
-import inquirer from "inquirer"
-import table from "console.table"
-import "dotenv/config"
-import express from "express"
+// installing dependencies
+const mysql = require('mysql2')
+const inquirer = require('inquirer'); 
+const cTable = require('console.table'); 
+require('dotenv').config()
 
-// connection to database
+// connecting to the mysql server 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: "!DhZ96jmp77",
-  port: "3306",
-  database: "employee_db"
+  port    :'3306',
+  database: 'employee_management_db'
 });
 
 connection.connect(err => {
   if (err) throw err;
   console.log('connected as id ' + connection.threadId);
-  // once connection is established, questions for the users are displayed
-  userQuestions();
+  success();
 });
 
-// inquirer prompt for user questions 
+// function after connection is established and welcome image shows 
+success = () => {
+  userQuestions();
+};
+
+// inquirer prompt for first action
 const userQuestions = () => {
   inquirer.prompt ([
     {
-      type: "list", 
-      message: "select the task you want to perform", 
-      name:"options",
-      options: [
-                "view all departments", 
-                "view all roles",
-                "view all employees",
-                "add a department",
-                "add a role",
-                "add an employee",
-                "update an employee role",
-                'No Action'
-            ]
+      type: 'list',
+      name: 'options', 
+      message: 'What would you like to do?',
+      options: ['View all departments', 
+                'View all roles', 
+                'View all employees', 
+                'Add a department', 
+                'Add a role', 
+                'Add an employee', 
+                'Update an employee role',
+                'No Action']
     }
   ])
-  // function is chosen based on the option selected by the user
-    .then((responses) => {
-      const { options } = responses; 
+    .then((answers) => {
+      const { options } = answers; 
 
-      if(options === "view all departments"){
-            showDepartments();
-      }   
-      if(options === "view all roles"){
+      if (options === "View all departments") {
         showDepartments();
       }
-      if(options === "view all employees"){
+
+      if (options === "View all roles") {
+        showRoles();
+      }
+
+      if (options === "View all employees") {
         showEmployees();
       }
-      if(options === "add a department"){
+
+      if (options === "Add a department") {
         addDepartment();
       }
-      if(options === "add a role"){
+
+      if (options === "Add a role") {
         addRole();
       }
-      if(options === "add an employee"){
+
+      if (options === "Add an employee") {
         addEmployee();
-      }   
-      if(options === "update an employee"){
+      }
+
+      if (options === "Update an employee role") {
         updateEmployee();
-      }               
+      }
+
       if (options === "No Action") {
         connection.end()
     };
   });
 };
 
+// function to show all departments to the user
+showDepartments = () => {
+  console.log('Showing all departments...\n');
+  const sql = `SELECT department.id AS id, department.name AS department FROM department`; 
 
-//function for displaying all departments
-function showDepartments(){
-    console.log("Displaying all departments!\n")
-    const sql = `SELECT department.id AS id, department.name AS department FROM department`; 
-    connection.promise().query(sql, (err, rows) => {
-        if (err) throw err;
-        console.table(rows);
-        userQuestions();
-      });
+  connection.promise().query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    userQuestions();
+  });
 };
 
-// function to display all employees
-function showEmployees(){
-    console.log('Displaying all employees!\n'); 
-    const sql = `SELECT employee.id, 
-                        employee.first_name, 
-                        employee.last_name, 
-                        role.title, 
-                        department.name AS department,
-                        role.salary, 
-                        CONCAT (manager.first_name, " ", manager.last_name) AS manager
-                FROM employee
-                        LEFT JOIN role ON employee.role_id = role.id
-                        LEFT JOIN department ON role.department_id = department.id
-                        LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+// function to show all roles to the user
+showRoles = () => {
+  console.log('Showing all roles...\n');
 
-    connection.promise().query(sql, (err, rows) => {
-        if (err) throw err; 
-        console.table(rows);
-        userQuestions();
-    });
-}
-
-// function to display all roles
-function showRoles(){
-    console.log('Displaying all roles!\n');
-    const sql = `SELECT role.id, role.title, department.name AS department
+  const sql = `SELECT role.id, role.title, department.name AS department
                FROM role
                INNER JOIN department ON role.department_id = department.id`;
-    connection.promise().query(sql, (err, rows) => {
-        if (err) throw err; 
-        console.table(rows); 
-        userQuestions();
-})
+  
+  connection.promise().query(sql, (err, rows) => {
+    if (err) throw err; 
+    console.table(rows); 
+    userQuestions();
+  })
 };
 
-// function for adding a department
-const addDepartment = () => {
-    inquirer.prompt([
-        {
-          type: 'input', 
-          name: 'addADept',
-          message: "Which department do you want to add?",
-          validate: addADept => {
-            if (addADept) {
-                return true;
-            } else {
-                console.log('Enter a department');
-                return false;
-            }
-          }
+// function to show all employees 
+showEmployees = () => {
+  console.log('Showing all employees...\n'); 
+  const sql = `SELECT employee.id, 
+                      employee.first_name, 
+                      employee.last_name, 
+                      role.title, 
+                      department.name AS department,
+                      role.salary, 
+                      CONCAT (manager.first_name, " ", manager.last_name) AS manager
+               FROM employee
+                      LEFT JOIN role ON employee.role_id = role.id
+                      LEFT JOIN department ON role.department_id = department.id
+                      LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+
+  connection.promise().query(sql, (err, rows) => {
+    if (err) throw err; 
+    console.table(rows);
+    userQuestions();
+  });
+};
+
+// function to add a department 
+addDepartment = () => {
+  inquirer.prompt([
+    {
+      type: 'input', 
+      name: 'addDept',
+      message: "What department do you want to add?",
+      validate: addDept => {
+        if (addDept) {
+            return true;
+        } else {
+            console.log('Please enter a department');
+            return false;
         }
-      ])
-        .then(answer => {
-          const sql = `INSERT INTO department (name)
-                      VALUES (?)`;
-          connection.query(sql, answer.addADept, (err, result) => {
-            if (err) throw err;
-            console.log('Department ' + answer.addADept + " added to departments!"); 
-            showDepartments();
-        });
-      });
-}
+      }
+    }
+  ])
+    .then(answer => {
+      const sql = `INSERT INTO department (name)
+                  VALUES (?)`;
+      connection.query(sql, answer.addDept, (err, result) => {
+        if (err) throw err;
+        console.log('Added ' + answer.addDept + " to departments!"); 
 
-
+        showDepartments();
+    });
+  });
+};
 
 // function to add a role 
-const addRole = () => {
+addRole = () => {
   inquirer.prompt([
     {
       type: 'input', 
       name: 'role',
-      message: "Which role do you want to add?",
-      validate: addARole => {
-        if (addARole) {
+      message: "What role do you want to add?",
+      validate: addRole => {
+        if (addRole) {
             return true;
         } else {
-            console.log('Enter a role');
+            console.log('Please enter a role');
             return false;
         }
       }
@@ -167,12 +175,12 @@ const addRole = () => {
     {
       type: 'input', 
       name: 'salary',
-      message: "Enter the salary for this role?",
-      validate: addASalary => {
-        if (isNAN(addASalary)) {
+      message: "What is the salary of this role?",
+      validate: addSalary => {
+        if (isNAN(addSalary)) {
             return true;
         } else {
-            console.log('Enter a salary');
+            console.log('Please enter a salary');
             return false;
         }
       }
@@ -193,7 +201,7 @@ const addRole = () => {
         {
           type: 'list', 
           name: 'dept',
-          message: "Which department is this role in?",
+          message: "What department is this role in?",
           options: dept
         }
         ])
@@ -206,7 +214,8 @@ const addRole = () => {
 
             connection.query(sql, params, (err, result) => {
               if (err) throw err;
-              console.log('Role' + answer.role + " added to roles!"); 
+              console.log('Added' + answer.role + " to roles!"); 
+
               showRoles();
        });
      });
@@ -215,17 +224,17 @@ const addRole = () => {
 };
 
 // function to add an employee 
-const addEmployee = () => {
+addEmployee = () => {
   inquirer.prompt([
     {
       type: 'input',
       name: 'fistName',
-      message: "Enter employee's first name?",
-      validate: addFirstN => {
-        if (addFirstN) {
+      message: "What is the employee's first name?",
+      validate: addFirst => {
+        if (addFirst) {
             return true;
         } else {
-            console.log('Enter a first name');
+            console.log('Please enter a first name');
             return false;
         }
       }
@@ -233,12 +242,12 @@ const addEmployee = () => {
     {
       type: 'input',
       name: 'lastName',
-      message: "Enter employee's last name?",
-      validate: addLastN => {
-        if (addLastN) {
+      message: "What is the employee's last name?",
+      validate: addLast => {
+        if (addLast) {
             return true;
         } else {
-            console.log('Enter a last name');
+            console.log('Please enter a last name');
             return false;
         }
       }
@@ -280,7 +289,7 @@ const addEmployee = () => {
                   {
                     type: 'list',
                     name: 'manager',
-                    message: "Select this employee's manager?",
+                    message: "Who is the employee's manager?",
                     options: managers
                   }
                 ])
@@ -293,7 +302,7 @@ const addEmployee = () => {
 
                     connection.query(sql, params, (err, result) => {
                     if (err) throw err;
-                    console.log("Employee added!")
+                    console.log("Employee has been added!")
 
                     showEmployees();
               });
@@ -304,8 +313,8 @@ const addEmployee = () => {
   });
 };
 
-// function to updating an employee 
-const updateEmployee = () => {
+// function to update an employee 
+updateEmployee = () => {
   // get employees from employee table 
   const employeeSql = `SELECT * FROM employee`;
 
@@ -318,7 +327,7 @@ const updateEmployee = () => {
       {
         type: 'list',
         name: 'name',
-        message: "Select an employee to update?",
+        message: "Which employee would you like to update?",
         options: employees
       }
     ])
@@ -338,7 +347,7 @@ const updateEmployee = () => {
               {
                 type: 'list',
                 name: 'role',
-                message: "Enter employee's new role?",
+                message: "What is the employee's new role?",
                 options: roles
               }
             ])
@@ -357,7 +366,7 @@ const updateEmployee = () => {
 
                 connection.query(sql, params, (err, result) => {
                   if (err) throw err;
-                console.log("This employee has been updated successfully!");
+                console.log("Employee has been updated!");
               
                 showEmployees();
           });
@@ -366,3 +375,8 @@ const updateEmployee = () => {
     });
   });
 };
+
+
+
+
+
